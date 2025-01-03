@@ -7,7 +7,7 @@
 ** Correlated files:    lib_timer.c, funct_timer.c, IRQ_timer.c
 **--------------------------------------------------------------------------------------------------------
 *********************************************************************************************************/
-#include "lpc17xx.h"
+#include "LPC17xx.h"
 #include "timer.h"
 
 /******************************************************************************
@@ -88,7 +88,7 @@ uint32_t init_timer ( uint8_t timer_num, uint32_t TimerInterval )
   {
 	LPC_TIM0->MR0 = TimerInterval;
 
-//*** <<< Use Configuration Wizard in Context Menu >>> ***
+// *** <<< Use Configuration Wizard in Context Menu >>> ***
 // <h> timer0 MCR
 //   <e.0> MR0I
 //	 <i> 1 Interrupt on MR0: an interrupt is generated when MR0 matches the value in the TC. 0
@@ -140,7 +140,7 @@ uint32_t init_timer ( uint8_t timer_num, uint32_t TimerInterval )
 //   </e>
 	LPC_TIM0->MCR = 7;
 // </h>
-//*** <<< end of configuration section >>>    ***
+// <<< end of configuration section >>>    ***/
 
 	NVIC_EnableIRQ(TIMER0_IRQn);
 	return (1);

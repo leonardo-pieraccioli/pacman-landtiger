@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "*.jflex": "jflex",
+        "joystick.h": "c"
+    }
+}
