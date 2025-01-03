@@ -1,11 +1,13 @@
 #include "game.h"
+#include "map.h"
+
 #include "../GLCD/GLCD.h"
 #include "../engine/input_handling.h"
+
 #include <math.h>
 #include <stdio.h>
 
 // temporary for square display
-#define PACMAN_DIM 9
 #define PACMAN_HALF_DIM 5
 
 // utility functions
@@ -21,6 +23,7 @@ typedef struct pacman_s
 	uint8_t direction;
 	uint8_t speed; // every 50 ms
 } pacman_t;
+
 pacman_t pacman;
 
 
@@ -28,9 +31,10 @@ pacman_t pacman;
 void game_init()
 {
 	pacman.x = 50;
-	pacman.y = 50;
+	pacman.y = 0;
 	pacman.direction = G_RIGHT;
 	pacman.speed = 5;
+	map_init();
 }
 
 void game_process_input()
@@ -79,7 +83,7 @@ void game_update()
 	}
 	
 	// MOVE PACMAN -----------------------
-	draw_square(pacman.x, pacman.y, Blue);
+	draw_square(pacman.x, pacman.y, Blue); // erase pacman
 	switch (pacman.direction)
 	{	
 		case G_UP:
@@ -95,7 +99,7 @@ void game_update()
 			pacman.x -= pacman.speed;
 			break;
 	}
-	draw_square(pacman.x, pacman.y, Yellow);
+	draw_square(pacman.x, pacman.y, Yellow); // draw pacman
 	
 	// CHECK BOUND LIMITS ------------------
 	if (pacman.y >= MAX_Y + PACMAN_HALF_DIM)

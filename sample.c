@@ -33,7 +33,7 @@ int main (void) {
   	
 	SystemInit();  												/* System Initialization (i.e., PLL)  */
   LCD_Initialization();
-	LCD_Clear(Blue);
+	LCD_Clear(Black);
 	BUTTON_init();
 	joystick_init();
 	init_RIT(0x004C4B40);
