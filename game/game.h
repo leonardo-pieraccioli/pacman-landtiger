@@ -35,7 +35,8 @@ void game_render();
 void change_game_state(int new_state);
 
 // PacMan functions
-void pacman_move(int dir);
-void draw_square(uint16_t xpos, uint16_t ypos, uint16_t color);
+void pacman_new_direction(int dir);
+void pacman_move();
+void pacman_update_ji();
 
 #endif

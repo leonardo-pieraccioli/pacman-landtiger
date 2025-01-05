@@ -39,7 +39,7 @@ int J_isPressed(int j_key)
 	{	
 		/* Joystick direction pressed */
 		*active_key = (*active_key) + 1;
-		if((*active_key) == 1)   
+		if((*active_key) >= 1)   
 		{
 			return 1;
 		}
@@ -65,7 +65,7 @@ int B_isPressed()
 	if(INT0_down>=1)
 	{ 
 		if((LPC_GPIO2->FIOPIN & (1<<10)) == 0){	/* KEY0 pressed */
-			if(INT0_down == 1)
+			if(INT0_down >= 1)
 				return 1;
 		}
 		else 

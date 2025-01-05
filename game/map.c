@@ -1,14 +1,5 @@
 #include "map.h"
 #include "../GLCD/GLCD.h"
-
-#define MAP_ROW_DIM 24
-#define MAP_COL_DIM 21
-
-#define Y_OFFSET 40
-#define X_OFFSET 5
-#define CELL_DIM 11
-#define PILL_DIM 3
-
 enum MapCode {
 	MC_Wall,
 	MC_Pill,
@@ -64,19 +55,72 @@ void map_init()
 			switch (map_matrix[i][j])
 			{
 				case (MC_Wall):
-					draw_square_cell(X_OFFSET + j * CELL_DIM, Y_OFFSET + i * CELL_DIM, Blue, CELL_DIM);
+					draw_square_cell(X_OFFSET + 2 + j * CELL_DIM, Y_OFFSET + 2 + i * CELL_DIM, Blue, CELL_DIM - 4);
 					
 					break;
 				case (MC_Pill):
-					draw_square_cell(X_OFFSET + 4 + j * CELL_DIM, Y_OFFSET + 4 + i * CELL_DIM, Yellow, PILL_DIM);
+					draw_square_cell(X_OFFSET + (CELL_DIM - PILL_DIM)/2 + j * CELL_DIM, Y_OFFSET + (CELL_DIM - PILL_DIM)/2 + i * CELL_DIM, Yellow, PILL_DIM);
 					
 					break;
 				default:
 					
 					break;
 			}
-			
 		}
 	}
+}
 
+void map_redraw_pause()
+{
+	int i,j;
+	for (i = 11; i < 13; i++)
+	{
+		for (j = 8; j < 13; j++)
+		{
+			switch (map_matrix[i][j])
+			{
+				case (MC_Wall):
+					draw_square_cell(X_OFFSET + 2 + j * CELL_DIM, Y_OFFSET + 2 + i * CELL_DIM, Blue, CELL_DIM - 4);
+					
+					break;
+
+				default:
+					
+					break;
+			}
+		}
+	}
+}
+
+void map_eat_pill(uint8_t j, uint8_t i)
+{
+	map_matrix[i][j] = MC_Empty;
+}
+int map_is_pill(uint8_t j, uint8_t i)
+{
+	if (map_matrix[i][j] == MC_Pill)
+		return 1;
+	return 0;
+}
+
+int map_is_wall(uint8_t j, uint8_t i)
+{
+	if (map_matrix[i][j] == MC_Wall)
+		return 1;
+	return 0;
+}
+
+void map_xy_to_ji(int16_t x, int16_t y, int8_t *j, int8_t *i)
+{
+	if ((x - X_OFFSET) % 10 == 0)
+		*j = (x - X_OFFSET) / CELL_DIM;
+	
+	if((y - Y_OFFSET) % 10 == 0)
+		*i = (y - Y_OFFSET) / CELL_DIM;
+}
+
+void map_ji_to_xy(int8_t j, int8_t i, int16_t *x, int16_t *y)
+{
+	*x = X_OFFSET + j * CELL_DIM;
+	*y = Y_OFFSET + i * CELL_DIM;
 }

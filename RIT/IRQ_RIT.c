@@ -29,12 +29,7 @@ void RIT_IRQHandler (void)
 	game_process_input();
 	game_update();
 	
-	// RENDER SCREEN ------------------------
-	if (current_tick % SCREEN_REFRESH_TICKS == 0)
-	{
-		game_render();
-	}
-	
+	game_render();
 	// RESET RIT -------------------------------
   LPC_RIT->RICTRL |= 0x1;	/* clear RIT flag */
   return;
