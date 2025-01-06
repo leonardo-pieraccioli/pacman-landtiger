@@ -27,9 +27,9 @@
 void RIT_IRQHandler (void)
 {	
 	game_process_input();
-	game_update();
-	
+	game_update();	
 	game_render();
+	
 	// RESET RIT -------------------------------
   LPC_RIT->RICTRL |= 0x1;	/* clear RIT flag */
   return;

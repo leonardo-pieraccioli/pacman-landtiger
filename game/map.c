@@ -22,7 +22,7 @@ int map_matrix[MAP_ROW_DIM][MAP_COL_DIM] = {
 {0, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1, 1, 0},
 {0, 1, 0, 0, 1, 0, 0, 1, 0, 2, 2, 2, 0, 1, 0, 0, 1, 0, 0, 1, 0},
 {0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0},
-{0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0},
+{0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 2, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0},
 {0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0},
 {0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0},
 {0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0},
@@ -117,6 +117,15 @@ void map_xy_to_ji(int16_t x, int16_t y, int8_t *j, int8_t *i)
 	
 	if((y - Y_OFFSET) % 10 == 0)
 		*i = (y - Y_OFFSET) / CELL_DIM;
+}
+
+int map_outofbound(int pacman_x)
+{
+	if (pacman_x > X_OFFSET + (MAP_COL_DIM - 2) * CELL_DIM + 5)
+		return X_OFFSET + CELL_DIM - 5;
+	else if (pacman_x < X_OFFSET + CELL_DIM - 5)
+		return X_OFFSET + (MAP_COL_DIM - 2) * CELL_DIM + 5;
+	return 0;
 }
 
 void map_ji_to_xy(int8_t j, int8_t i, int16_t *x, int16_t *y)
