@@ -11,12 +11,6 @@
 
 #define LIVES_OFFSET 287
 
-// EXTERNAL VARIABLES
-// ------------------
-extern const int pacman_frames[4][PACMAN_DIM][PACMAN_DIM];
-extern const int life_sprite[12][12];
-extern pacman_t pacman;
-
 // FUNCTION DECLARATIONS
 // ---------------------
 void display_timer();
@@ -30,7 +24,9 @@ void remove_life();
 int game_state = GS_PLAY;
 int high_score = 0;
 int eaten_pills = 0;
-int lives = 2;
+int lives = 1;
+int power_pill_spawn_times[6];
+int last_power_pill_spawn = 0;
 
 // GAME LOOP FUNCTIONS
 // -------------------
@@ -42,6 +38,15 @@ void game_init()
 	display_lives();
 	pacman_init();
 	map_init();
+	
+	int i, curr_min = 0, curr_max = 199;
+	for (i = 0; i < 6; i++)
+	{
+		power_pill_spawn_times[i] = rand() % (curr_max - curr_min) + curr_min;
+		curr_min += 120;
+		curr_max += 120;
+	}
+	i++;
 }
 
 void game_process_input()
@@ -84,6 +89,12 @@ void game_update()
 	if (current_tick == MAX_TIME)
 		change_game_state(GS_LOOSE);
 
+	if (current_tick == power_pill_spawn_times[last_power_pill_spawn] && last_power_pill_spawn <= 6)
+	{
+		last_power_pill_spawn++;
+		insert_power_pill();
+	}
+	
 	pacman_move();
 	map_xy_to_ji(pacman.x, pacman.y, &pacman.j, &pacman.i);
 	
@@ -91,11 +102,20 @@ void game_update()
 		map_eat_pill(pacman.j, pacman.i);
 		eaten_pills++;
 		high_score += 10;
-		if (high_score % 1000 == 0)
+		if (high_score >= 1000 * lives)
 			add_life();
-		if (eaten_pills == 240)
+		if (eaten_pills == TOTAL_PILLS)
 			change_game_state(GS_WIN);
 	}
+	else if (map_is_pill(pacman.j, pacman.i) == 2) {
+		map_eat_pill(pacman.j, pacman.i);
+		eaten_pills++;
+		high_score += 50;
+		if (high_score >= 1000 * lives)
+			add_life();
+		if (eaten_pills == TOTAL_PILLS)
+			change_game_state(GS_WIN);
+	}	
 	
 	int teleport_location = map_outofbound(pacman.x);
 	if (teleport_location != 0)

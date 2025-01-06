@@ -17,6 +17,12 @@ typedef struct pacman_s
 	uint8_t animation_frame;
 } pacman_t;
 
+// EXTERNAL VARIABLES
+// ------------------
+extern const int pacman_frames[4][PACMAN_DIM][PACMAN_DIM];
+extern const int life_sprite[12][12];
+extern pacman_t pacman;
+
 void pacman_init();
 void draw_pacman(uint16_t xpos, uint16_t ypos);
 void pacman_new_direction(int dir);

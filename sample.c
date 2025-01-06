@@ -14,13 +14,19 @@
  *----------------------------------------------------------------------------*/
                   
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 #include "LPC17xx.h"                    /* LPC17xx definitions                */
+
+#include "../adc/adc.h"
 #include "led/led.h"
 #include "button_EXINT/button.h"
 #include "timer/timer.h"
 #include "RIT/RIT.h"
-#include "joystick/joystick.h"
 #include "GLCD/GLCD.h"
+
+#include "joystick/joystick.h"
 #include "game/game.h"
 
 #ifdef SIMULATOR
@@ -31,10 +37,16 @@ extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emul
  *----------------------------------------------------------------------------*/
 int main (void) {
 	SystemInit();  												/* System Initialization (i.e., PLL)  */
-  LCD_Initialization();
+  
+	LCD_Initialization();
 	LCD_Clear(Black);
+	
 	BUTTON_init();
 	joystick_init();
+	
+	ADC_init();
+	ADC_start_conversion();
+	srand(read_AD_current());
 	
 	game_init();
 	

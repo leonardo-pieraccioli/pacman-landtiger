@@ -48,17 +48,10 @@ const int freqs[8]={2120,1890,1684,1592,1417,1263,1125,1062};
 */
 
 void ADC_IRQHandler(void) {
-  	
   AD_current = ((LPC_ADC->ADGDR>>4) & 0xFFF);/* Read Conversion Result             */
-  if(AD_current != AD_last){
-		LED_Off(AD_last*7/0xFFF);	  // ad_last : AD_max = x : 7 		LED_Off((AD_last*7/0xFFF));	
-		LED_On(AD_current*7/0xFFF);	// ad_current : AD_max = x : 7 		LED_On((AD_current*7/0xFFF));	
-		disable_timer(0);
-		reset_timer(0);
-		init_timer(0,freqs[AD_current*7/0xFFF]);
-		enable_timer(0);
-		
-		AD_last = AD_current;
-  }
-	
+}
+
+unsigned short read_AD_current()
+{
+	return AD_current;
 }

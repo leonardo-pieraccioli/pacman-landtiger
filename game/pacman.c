@@ -1,6 +1,7 @@
 #include "pacman.h"
 #include "../GLCD/GLCD.h"
 #include "game.h"
+#include "map.h"
 
 const int pacman_frames[4][PACMAN_DIM][PACMAN_DIM] = {
 {
@@ -63,14 +64,15 @@ pacman_t pacman;
 
 void pacman_init()
 {
-	pacman.i = 9;
-	pacman.j = 18;
+	pacman.i = 14;
+	pacman.j = 10;
 	map_ji_to_xy(pacman.j, pacman.i, &pacman.x, &pacman.y);
 	
 	pacman.direction = G_RIGHT;
 	pacman.speed = 5;
 	pacman.animation_frame = 0;
 	
+	draw_pacman(pacman.x + 1, pacman.y + 1);
 }
 
 void draw_pacman(uint16_t xpos, uint16_t ypos)
@@ -126,7 +128,10 @@ void draw_pacman(uint16_t xpos, uint16_t ypos)
 }
 
 void pacman_new_direction(int dir)
-{
+{	
+	if((pacman.x - X_OFFSET) % 10 != 0 || (pacman.y - Y_OFFSET) % 10 != 0)
+		return;
+	
 	switch (dir)
 	{
 		case G_UP:
@@ -161,8 +166,9 @@ void draw_square(uint16_t xpos, uint16_t ypos, uint16_t color)
 void pacman_move()
 {
 	draw_square(pacman.x + 1, pacman.y + 1, Black); // erase pacman
+
 	switch (pacman.direction)
-	{	
+	{
 		case G_UP:
 			if(map_is_wall(pacman.j, pacman.i - 1) == 0) 
 				pacman.y -= pacman.speed;
