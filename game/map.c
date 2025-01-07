@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "map.h"
+#include "pacman.h"
 #include "../GLCD/GLCD.h"
 
 enum MapCode {
@@ -159,19 +160,19 @@ int map_is_wall(uint8_t j, uint8_t i)
 
 int map_outofbound(int pacman_x)
 {
-	if (pacman_x > X_OFFSET + (MAP_COL_DIM - 2) * CELL_DIM + 5)
-		return X_OFFSET + CELL_DIM - 5;
-	else if (pacman_x < X_OFFSET + CELL_DIM - 5)
-		return X_OFFSET + (MAP_COL_DIM - 2) * CELL_DIM + 5;
+	if (pacman_x > X_OFFSET + (MAP_COL_DIM - 1) * CELL_DIM - SPEED)
+		return X_OFFSET + SPEED;
+	else if (pacman_x < X_OFFSET + SPEED)
+		return X_OFFSET + (MAP_COL_DIM - 1) * CELL_DIM - SPEED;
 	return 0;
 }
 
 void map_xy_to_ji(int16_t x, int16_t y, int8_t *j, int8_t *i)
 {
-	if ((x - X_OFFSET) % 10 == 0)
+	if ((x - X_OFFSET) % CELL_DIM == 0)
 		*j = (x - X_OFFSET) / CELL_DIM;
 	
-	if((y - Y_OFFSET) % 10 == 0)
+	if((y - Y_OFFSET) % CELL_DIM == 0)
 		*i = (y - Y_OFFSET) / CELL_DIM;
 }
 

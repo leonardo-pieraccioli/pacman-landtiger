@@ -2,11 +2,12 @@
 #define GAME_H
 
 #include "LPC17xx.h"
+#include <math.h>
 
 // Global defines
-#define TICK_FREQUENCY 50 				// time between two updates in ms
+#define TICK_FREQUENCY 20.0f			// time between two updates in ms
 #define SCREEN_REFRESH_TICKS 10 	// render update time
-#define MAX_TIME 1200 // 60k ms, a tick every 50ms = 1200 tick for 60s of gameplay
+#define MAX_TIME_SECONDS 60
 
 // Tick 
 static int current_tick = 0;
@@ -26,6 +27,8 @@ enum GameStates
 	GS_WIN,
 	GS_LOOSE
 };
+
+extern int game_state;
 
 // General render functions
 void game_init();

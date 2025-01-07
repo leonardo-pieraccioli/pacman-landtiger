@@ -64,13 +64,14 @@ pacman_t pacman;
 
 void pacman_init()
 {
-	pacman.i = 14;
-	pacman.j = 10;
+	pacman.i = INIT_I;
+	pacman.j = INIT_J;
+	
 	map_ji_to_xy(pacman.j, pacman.i, &pacman.x, &pacman.y);
 	
 	pacman.direction = G_RIGHT;
-	pacman.speed = 5;
-	pacman.animation_frame = 0;
+	pacman.speed = SPEED;
+	pacman.animation_frame = INIT_ANIM_FRAME;
 	
 	draw_pacman(pacman.x + 1, pacman.y + 1);
 }
@@ -129,7 +130,7 @@ void draw_pacman(uint16_t xpos, uint16_t ypos)
 
 void pacman_new_direction(int dir)
 {	
-	if((pacman.x - X_OFFSET) % 10 != 0 || (pacman.y - Y_OFFSET) % 10 != 0)
+	if((pacman.x - X_OFFSET) % CELL_DIM != 0 || (pacman.y - Y_OFFSET) % CELL_DIM != 0)
 		return;
 	
 	switch (dir)

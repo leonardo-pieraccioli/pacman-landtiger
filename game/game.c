@@ -6,7 +6,6 @@
 #include "../GLCD/GLCD.h"
 #include "../engine/input_handling.h"
 
-#include <math.h>
 #include <stdio.h>
 
 #define LIVES_OFFSET 287
@@ -21,30 +20,44 @@ void remove_life();
 
 // GLOBAL VARIABLES
 // ----------------
-int game_state = GS_PLAY;
+int game_state;
 int high_score = 0;
 int eaten_pills = 0;
 int lives = 1;
 int power_pill_spawn_times[6];
 int last_power_pill_spawn = 0;
 
+// RIT CONFIGURATION
+// -----------------
+float tick_freq_in_seconds;
+int ticks_per_second;
+int ticks_per_minute;
+
 // GAME LOOP FUNCTIONS
 // -------------------
 void game_init()
-{
+{	
+	map_init();
+	change_game_state(GS_PAUSE);
+	
+	tick_freq_in_seconds = TICK_FREQUENCY / 1000;
+	ticks_per_second = (int) ceilf(1 / tick_freq_in_seconds);
+	ticks_per_minute = ticks_per_second * MAX_TIME_SECONDS;
+	
 	GUI_Text(10, 10, (uint8_t*) "TIME: ", White, Black);
 	GUI_Text(110, 10, (uint8_t*) "HIGHSCORE: ", White, Black);
-
+	
 	display_lives();
 	pacman_init();
-	map_init();
 	
-	int i, curr_min = 0, curr_max = 199;
+	game_render();
+	
+	int i, curr_min = 0, curr_max = (ticks_per_second / 2) - 1;
 	for (i = 0; i < 6; i++)
 	{
 		power_pill_spawn_times[i] = rand() % (curr_max - curr_min) + curr_min;
-		curr_min += 120;
-		curr_max += 120;
+		curr_min += ticks_per_second / 2;
+		curr_max += ticks_per_second / 2;
 	}
 	i++;
 }
@@ -82,11 +95,9 @@ void game_process_input()
 }
 
 void game_update()
-{
-	if (game_state != GS_PLAY) return;
-	
+{	
 	current_tick++;
-	if (current_tick == MAX_TIME)
+	if (current_tick == ticks_per_minute)
 		change_game_state(GS_LOOSE);
 
 	if (current_tick == power_pill_spawn_times[last_power_pill_spawn] && last_power_pill_spawn <= 6)
@@ -130,9 +141,7 @@ void game_update()
 }
 
 void game_render()
-{
-	if (game_state != GS_PLAY) return;
-	
+{	
 	draw_pacman(pacman.x + 1, pacman.y + 1); // draw pacman
 	display_timer();
 	display_score();
@@ -155,23 +164,26 @@ void change_game_state(int new_state)
 			break;
 		case GS_WIN:
 			game_state = GS_WIN;
-			GUI_Text(92, 150, (uint8_t*)"VICTORY!", White, Black);
+			GUI_Text(88, 150, (uint8_t*)"VICTORY!", White, Black);
 			break;
 		case GS_LOOSE:
 			game_state = GS_LOOSE;
-			GUI_Text(72, 150, (uint8_t*)"GAME OVER!", White, Black);
+			GUI_Text(80, 150, (uint8_t*)"GAME OVER!", White, Black);
 			break;
 	}
 }
 
-// LIFE AND DISPLAY
-// ----------------
+// DISPLAY FUNCTIONS
+// -----------------
 void display_timer() 
 {
-	float timer_shown = (float) (1200 - current_tick) * 0.05;
+	// 1200 a 50ms RIT, 3000 a 20ms
+
+	
+	float timer_shown = (float) (ticks_per_minute - current_tick) * tick_freq_in_seconds;
 	char str[5]; 
-	sprintf(str, "%.0f", ceilf(timer_shown));
-	if ((1200 - current_tick + 1) % 120 == 0)
+	sprintf(str, "%.0f", timer_shown);
+	if ((ticks_per_minute - current_tick + 1) % ticks_per_second == 0 || current_tick == 0)
 	{
 		GUI_Text(56, 10, (uint8_t*) "   ", Black, Black);
 		GUI_Text(56, 10, (uint8_t*) str, White, Black);
@@ -209,6 +221,9 @@ void display_lives()
 		draw_life(k);
 	}
 }
+
+// LIVES LOGIC
+// -----------
 
 void add_life()
 {

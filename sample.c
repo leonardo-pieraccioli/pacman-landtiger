@@ -50,7 +50,9 @@ int main (void) {
 	
 	game_init();
 	
-	init_RIT(0x004C4B40);
+	int rit_counter = TICK_FREQUENCY * 100000; // tick_f in ms, so multiplied by 100MHz but divided by 1000
+	
+	init_RIT(rit_counter);
 	enable_RIT();
 	
 	LPC_SC->PCON |= 0x1;									/* power-down	mode										*/
