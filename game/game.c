@@ -52,12 +52,12 @@ void game_init()
 	
 	game_render();
 	
-	int i, curr_min = 0, curr_max = (ticks_per_second / 2) - 1;
+	int i, curr_min = 0, curr_max = (ticks_per_second * 2) - 1;
 	for (i = 0; i < 6; i++)
 	{
 		power_pill_spawn_times[i] = rand() % (curr_max - curr_min) + curr_min;
-		curr_min += ticks_per_second / 2;
-		curr_max += ticks_per_second / 2;
+		curr_min += ticks_per_second * 2;
+		curr_max += ticks_per_second * 2;
 	}
 	i++;
 }
@@ -85,7 +85,7 @@ void game_process_input()
 	
 	// BUTTON INPUT
 	// ------------
-	if (B_isPressed())
+	if (B_isPressed() == 1)
 	{
 		if(game_state == GS_PLAY)
 			change_game_state(GS_PAUSE);
@@ -113,6 +113,7 @@ void game_update()
 		map_eat_pill(pacman.j, pacman.i);
 		eaten_pills++;
 		high_score += 10;
+		display_score();
 		if (high_score >= 1000 * lives)
 			add_life();
 		if (eaten_pills == TOTAL_PILLS)
@@ -122,6 +123,7 @@ void game_update()
 		map_eat_pill(pacman.j, pacman.i);
 		eaten_pills++;
 		high_score += 50;
+		display_score();
 		if (high_score >= 1000 * lives)
 			add_life();
 		if (eaten_pills == TOTAL_PILLS)
@@ -144,7 +146,6 @@ void game_render()
 {	
 	draw_pacman(pacman.x + 1, pacman.y + 1); // draw pacman
 	display_timer();
-	display_score();
 }
 
 // GAME STATE

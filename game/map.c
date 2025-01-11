@@ -124,7 +124,7 @@ void insert_power_pill()
 	int random_pill_index;
 	do {
 		random_pill_index = rand() % (TOTAL_PILLS);
-	} while (pills_array[random_pill_index].is_eaten == 1);
+	} while (pills_array[random_pill_index].is_eaten == 1 || pills_array[random_pill_index].is_power_pill == 1);
 	
 	pills_array[random_pill_index].is_power_pill = 1;
 	map_matrix[pills_array[random_pill_index].i][pills_array[random_pill_index].j] = MC_PowerPill;

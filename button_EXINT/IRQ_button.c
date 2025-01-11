@@ -23,4 +23,4 @@ void EINT2_IRQHandler (void)	  	/* KEY2														 */
   LPC_SC->EXTINT &= (1 << 2);     /* clear pending interrupt         */    
 }
 
-
+	

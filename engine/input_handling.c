@@ -62,10 +62,11 @@ void J_cleanInputsOtherThan(int direction)
 int B_isPressed()
 {
 	// BUTTON INPUT -------------------
-	if(INT0_down>=1)
+	if(INT0_down != 0)
 	{ 
-		if((LPC_GPIO2->FIOPIN & (1<<10)) == 0){	/* KEY0 pressed */
-			if(INT0_down >= 1)
+		INT0_down++;
+		if((LPC_GPIO2->FIOPIN & (1<<10)) == 0){		/* KEY0 pressed */
+			if(INT0_down == 2)
 				return 1;
 		}
 		else 
