@@ -47,7 +47,6 @@ int main (void) {
 	joystick_init();
 	
 	ADC_init();
-	ADC_start_conversion();
 	srand(read_AD_current());
 	
 	init_timer(0, 0, 0, 3, 0x017D7840);
@@ -61,6 +60,12 @@ int main (void) {
 	
 	LPC_SC->PCON |= 0x1;									/* power-down	mode										*/
 	LPC_SC->PCON &= ~(0x2);						
+	
+	LPC_PINCON->PINSEL1 |= (1<<21);	      /* set speaker pins										*/
+	LPC_PINCON->PINSEL1 &= ~(1<<20);
+	LPC_GPIO0->FIODIR |= (1<<26);
+	
+	LPC_SC -> PCONP |= (1 << 22);  				/* TURN ON TIMER 2                    */
 		
   while (1) {                           /* Loop forever                       */
 		__ASM("wfi");

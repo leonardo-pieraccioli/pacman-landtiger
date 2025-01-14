@@ -13,6 +13,7 @@
 
 #include "../GLCD/GLCD.h"
 #include "../game/game.h"
+#include "../music/music.h"
 
 /******************************************************************************
 ** Function name:		RIT_IRQHandler
@@ -24,8 +25,20 @@
 **
 ******************************************************************************/
 
+static int currentNote = 0;
+static int ticks = 0;
+
 void RIT_IRQHandler (void)
 {	
+	/*music management*/
+	if(!isNotePlaying()){
+		++ticks;
+		if(ticks == UPTICKS){
+			ticks = 0;
+			playSound();
+		}
+	}
+	
 	game_process_input();
 	if(game_state == GS_PLAY)
 	{

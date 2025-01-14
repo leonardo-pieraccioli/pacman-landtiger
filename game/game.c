@@ -7,6 +7,7 @@
 #include "../engine/input_handling.h"
 #include "CAN/CAN.h"
 #include "timer.h"
+#include "music/music.h"
 
 #include <stdio.h>
 
@@ -39,6 +40,8 @@ int ticks_per_minute;
 void game_init()
 {	
 	map_init();
+	sound_init();
+	
 	change_game_state(GS_PAUSE);
 	high_score = 0;
 	lives = 1;
@@ -58,6 +61,8 @@ void game_init()
 	pacman_init();
 	
 	game_render();
+	
+	change_sound(S_WIN);
 	
 	int i, curr_min = 0, curr_max = (ticks_per_second * 2) - 1;
 	for (i = 0; i < 6; i++)
@@ -124,6 +129,7 @@ void game_update()
 			high_score += 50;
 		}		
 		map_eat_pill(pacman.j, pacman.i);
+		change_sound(S_CHOMP);
 		eaten_pills++;
 		
 		send_game_status(current_time, lives, high_score);
@@ -172,11 +178,13 @@ void change_game_state(int new_state)
 		case GS_WIN:
 			game_state = GS_WIN;
 			GUI_Text(88, 150, (uint8_t*)"VICTORY!", White, Black);
+			change_sound(S_WIN);
 			disable_timer(0);
 			break;
 		case GS_LOOSE:
 			game_state = GS_LOOSE;
 			GUI_Text(80, 150, (uint8_t*)"GAME OVER!", White, Black);
+			change_sound(S_LOOSE);
 			disable_timer(0);
 			break;
 	}
@@ -231,6 +239,7 @@ void add_life()
 {
 	lives++;
 	draw_life(lives);
+	change_sound(S_LIFE);
 }
 
 void remove_life()
@@ -241,6 +250,7 @@ void remove_life()
 		LCD_DrawLine(14 * lives, LIVES_OFFSET + i, 14 * lives + 12, LIVES_OFFSET + i, Black);
 	}
 	lives--;
+	change_sound(S_LOOSE);
 }
 
 // CAN MESSAGING
