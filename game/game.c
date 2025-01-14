@@ -5,6 +5,8 @@
 
 #include "../GLCD/GLCD.h"
 #include "../engine/input_handling.h"
+#include "CAN/CAN.h"
+#include "timer.h"
 
 #include <stdio.h>
 
@@ -12,18 +14,17 @@
 
 // FUNCTION DECLARATIONS
 // ---------------------
-void display_timer();
-void display_score();
-void display_lives();
 void add_life();
 void remove_life();
 
 // GLOBAL VARIABLES
 // ----------------
 int game_state;
-int high_score = 0;
+int high_score;
+int lives;
+int current_time;
+
 int eaten_pills = 0;
-int lives = 1;
 int power_pill_spawn_times[6];
 int last_power_pill_spawn = 0;
 
@@ -39,6 +40,9 @@ void game_init()
 {	
 	map_init();
 	change_game_state(GS_PAUSE);
+	high_score = 0;
+	lives = 1;
+	current_time = MAX_TIME_SECONDS;
 	
 	tick_freq_in_seconds = TICK_FREQUENCY / 1000;
 	ticks_per_second = (int) ceilf(1 / tick_freq_in_seconds);
@@ -47,7 +51,10 @@ void game_init()
 	GUI_Text(10, 10, (uint8_t*) "TIME: ", White, Black);
 	GUI_Text(110, 10, (uint8_t*) "HIGHSCORE: ", White, Black);
 	
-	display_lives();
+	display_lives(lives);
+	display_timer(current_time);
+	display_score(high_score);
+	
 	pacman_init();
 	
 	game_render();
@@ -109,26 +116,24 @@ void game_update()
 	pacman_move();
 	map_xy_to_ji(pacman.x, pacman.y, &pacman.j, &pacman.i);
 	
-	if (map_is_pill(pacman.j, pacman.i) == 1) {
+	if (map_is_pill(pacman.j, pacman.i) != 0) {	
+		if (map_is_pill(pacman.j, pacman.i) == 1) {	
+			high_score += 10;
+		}
+		else if (map_is_pill(pacman.j, pacman.i) == 2) {
+			high_score += 50;
+		}		
 		map_eat_pill(pacman.j, pacman.i);
 		eaten_pills++;
-		high_score += 10;
-		display_score();
+		
+		send_game_status(current_time, lives, high_score);
+			
 		if (high_score >= 1000 * lives)
 			add_life();
+		
 		if (eaten_pills == TOTAL_PILLS)
-			change_game_state(GS_WIN);
+			change_game_state(GS_WIN);	
 	}
-	else if (map_is_pill(pacman.j, pacman.i) == 2) {
-		map_eat_pill(pacman.j, pacman.i);
-		eaten_pills++;
-		high_score += 50;
-		display_score();
-		if (high_score >= 1000 * lives)
-			add_life();
-		if (eaten_pills == TOTAL_PILLS)
-			change_game_state(GS_WIN);
-	}	
 	
 	int teleport_location = map_outofbound(pacman.x);
 	if (teleport_location != 0)
@@ -145,7 +150,6 @@ void game_update()
 void game_render()
 {	
 	draw_pacman(pacman.x + 1, pacman.y + 1); // draw pacman
-	display_timer();
 }
 
 // GAME STATE
@@ -157,44 +161,41 @@ void change_game_state(int new_state)
 		case GS_PAUSE:
 			game_state = GS_PAUSE;
 			GUI_Text(100, 150, (uint8_t*)"PAUSE", White, Black);
+			disable_timer(0);
 			break;
 		case GS_PLAY:
 			game_state = GS_PLAY;
 			GUI_Text(100, 150, (uint8_t*)"     ", Black, Black);
 			map_redraw_pause();
+			enable_timer(0);
 			break;
 		case GS_WIN:
 			game_state = GS_WIN;
 			GUI_Text(88, 150, (uint8_t*)"VICTORY!", White, Black);
+			disable_timer(0);
 			break;
 		case GS_LOOSE:
 			game_state = GS_LOOSE;
 			GUI_Text(80, 150, (uint8_t*)"GAME OVER!", White, Black);
+			disable_timer(0);
 			break;
 	}
 }
 
 // DISPLAY FUNCTIONS
 // -----------------
-void display_timer() 
+void display_timer(int time) 
 {
-	// 1200 a 50ms RIT, 3000 a 20ms
-
-	
-	float timer_shown = (float) (ticks_per_minute - current_tick) * tick_freq_in_seconds;
-	char str[5]; 
-	sprintf(str, "%.0f", timer_shown);
-	if ((ticks_per_minute - current_tick + 1) % ticks_per_second == 0 || current_tick == 0)
-	{
-		GUI_Text(56, 10, (uint8_t*) "   ", Black, Black);
-		GUI_Text(56, 10, (uint8_t*) str, White, Black);
-	}
+	char str[3]; 
+	sprintf(str, "%d", time);
+	GUI_Text(56, 10, (uint8_t*) "   ", Black, Black);
+	GUI_Text(56, 10, (uint8_t*) str, White, Black);
 }
 
-void display_score() 
+void display_score(int score) 
 {
 	char str[5]; 
-	sprintf(str, "%4d", high_score);
+	sprintf(str, "%4d", score);
 
 	GUI_Text(198, 10, (uint8_t*) "       ", Black, Black);
 	GUI_Text(198, 10, (uint8_t*) str, White, Black);
@@ -214,7 +215,7 @@ void draw_life(int offset)
 	}
 }
 
-void display_lives()
+void display_lives(int lives)
 {
 	int k;
 	for (k = 1; k <= lives; k++)
@@ -240,4 +241,25 @@ void remove_life()
 		LCD_DrawLine(14 * lives, LIVES_OFFSET + i, 14 * lives + 12, LIVES_OFFSET + i, Black);
 	}
 	lives--;
+}
+
+// CAN MESSAGING
+// -------------
+void send_game_status(int remaining_time, int remaining_lives, int score)
+{
+	char d0_score = score & 0xFF;
+	char d1_score = (score & 0xFF00) >> 8;
+	char d2_remaining_lives = remaining_lives & 0xFF;
+	char d3_remaining_time = remaining_time & 0xFF;
+	
+	CAN_TxMsg.data[0] = d0_score;
+	CAN_TxMsg.data[1] = d1_score;
+	CAN_TxMsg.data[2] = d2_remaining_lives;
+	CAN_TxMsg.data[3] = d3_remaining_time;
+	CAN_TxMsg.len = 4;
+	CAN_TxMsg.id = 2;
+	CAN_TxMsg.format = STANDARD_FORMAT;
+	CAN_TxMsg.type = DATA_FRAME;
+	CAN_wrMsg (1, &CAN_TxMsg);  
+
 }

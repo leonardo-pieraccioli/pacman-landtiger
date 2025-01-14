@@ -38,6 +38,8 @@ extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emul
 int main (void) {
 	SystemInit();  												/* System Initialization (i.e., PLL)  */
   
+	CAN_Init();
+	
 	LCD_Initialization();
 	LCD_Clear(Black);
 	
@@ -47,6 +49,8 @@ int main (void) {
 	ADC_init();
 	ADC_start_conversion();
 	srand(read_AD_current());
+	
+	init_timer(0, 0, 0, 3, 0x017D7840);
 	
 	game_init();
 	

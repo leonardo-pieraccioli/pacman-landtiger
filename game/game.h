@@ -5,7 +5,7 @@
 #include <math.h>
 
 // Global defines
-#define TICK_FREQUENCY 20.0f			// time between two updates in ms
+#define TICK_FREQUENCY 50.0f			// time between two updates in ms
 #define SCREEN_REFRESH_TICKS 10 	// render update time
 #define MAX_TIME_SECONDS 60
 
@@ -29,6 +29,9 @@ enum GameStates
 };
 
 extern int game_state;
+extern int high_score;
+extern int lives;
+extern int current_time;
 
 // General render functions
 void game_init();
@@ -42,4 +45,11 @@ void pacman_new_direction(int dir);
 void pacman_move();
 void pacman_update_ji();
 
+// display functions
+void display_timer(int time);
+void display_score(int score);
+void display_lives(int lives);
+
+// CAN functions
+void send_game_status(int remaining_time, int remaining_lives, int score);
 #endif

@@ -16,7 +16,7 @@
 #ifndef _CAN_H_
 #define _CAN_H_
 
-#include "../TouchPanel/TouchPanel.h"
+#include "LPC17xx.h"
 
 #define STANDARD_FORMAT  0
 #define EXTENDED_FORMAT  1
