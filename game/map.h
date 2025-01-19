@@ -11,8 +11,19 @@
 #define POWER_PILL_DIM 4
 #define TOTAL_PILLS 240
 
+enum EntityDirections
+{
+	G_UP,
+	G_RIGHT,
+	G_DOWN,
+	G_LEFT
+};
+
 void map_init();
 void map_redraw_pause();
+
+void draw_pill(int i, int j);
+void draw_power_pill(int i, int j);
 
 void map_eat_pill(uint8_t j, uint8_t i);
 int map_is_pill(uint8_t j, uint8_t i);
@@ -23,3 +34,5 @@ void insert_power_pill();
 
 void map_xy_to_ji(int16_t x, int16_t y, int8_t *j, int8_t *i);
 void map_ji_to_xy(int8_t j, int8_t i, int16_t *x, int16_t *y);
+
+int count_walk_cells();

@@ -76,6 +76,7 @@ void draw_pill(int i, int j)
 {
 	draw_square_cell(X_OFFSET + (CELL_DIM - PILL_DIM)/2 + j * CELL_DIM, Y_OFFSET + (CELL_DIM - PILL_DIM)/2 + i * CELL_DIM, Yellow, PILL_DIM);
 }
+
 void draw_power_pill(int i, int j)
 {
 	draw_square_cell(X_OFFSET + (CELL_DIM - POWER_PILL_DIM)/2 + j * CELL_DIM, Y_OFFSET + (CELL_DIM - POWER_PILL_DIM)/2 + i * CELL_DIM, Yellow, POWER_PILL_DIM);
@@ -180,4 +181,20 @@ void map_ji_to_xy(int8_t j, int8_t i, int16_t *x, int16_t *y)
 {
 	*x = X_OFFSET + j * CELL_DIM;
 	*y = Y_OFFSET + i * CELL_DIM;
+}
+
+// PATHFINDING
+
+int count_walk_cells()
+{
+	int i, j, counter = 0;
+	for (i = 0; i < MAP_COL_DIM; i++)
+	{
+		for (j = 0; j < MAP_ROW_DIM; j++)
+		{
+			if(map_matrix[i][j] != 0)
+				counter++;
+		}
+	}
+	return counter;
 }

@@ -2,6 +2,7 @@
 #include "game.h"
 #include "pacman.h"
 #include "map.h"
+#include "ghost.h"
 
 #include "../GLCD/GLCD.h"
 #include "../engine/input_handling.h"
@@ -59,6 +60,7 @@ void game_init()
 	display_score(high_score);
 	
 	pacman_init();
+	ghost_init();
 	
 	game_render();
 	
@@ -118,6 +120,9 @@ void game_update()
 		insert_power_pill();
 	}
 	
+	ghost_update();
+	ghost_draw();
+
 	pacman_move();
 	map_xy_to_ji(pacman.x, pacman.y, &pacman.j, &pacman.i);
 	

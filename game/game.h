@@ -12,14 +12,6 @@
 // Tick 
 static int current_tick = 0;
 
-enum EntityDirections
-{
-	G_UP,
-	G_RIGHT,
-	G_DOWN,
-	G_LEFT
-};
-
 enum GameStates
 {
 	GS_PLAY,

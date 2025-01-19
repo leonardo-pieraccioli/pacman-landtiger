@@ -6,7 +6,7 @@
 #define PACMAN_HALF_DIM 4
 #define PACMAN_DIM 8
 
-#define SPEED 5
+#define SPEED 2
 #define INIT_I 14
 #define INIT_J 10
 #define INIT_ANIM_FRAME 0

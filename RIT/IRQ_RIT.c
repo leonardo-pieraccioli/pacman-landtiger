@@ -30,6 +30,11 @@ static int ticks = 0;
 
 void RIT_IRQHandler (void)
 {	
+#ifdef SIMULATOR
+	disable_RIT();
+	reset_RIT();
+#endif	
+
 	/*music management*/
 	if(!isNotePlaying()){
 		++ticks;
@@ -45,6 +50,11 @@ void RIT_IRQHandler (void)
 		game_update();	
 		game_render();
 	}
+
+#ifdef SIMULATOR
+	enable_RIT();
+#endif
+
 	// RESET RIT -------------------------------
   LPC_RIT->RICTRL |= 0x1;	/* clear RIT flag */
   return;
